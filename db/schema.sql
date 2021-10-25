@@ -1,37 +1,27 @@
-DROP TABLE IF EXISTS votes;
-DROP TABLE IF EXISTS candidates;
-DROP TABLE IF EXISTS parties;
-DROP TABLE IF EXISTS voters;
+DROP TABLE IF EXISTS departments;
+DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS employees;
 
-CREATE TABLE parties (
+USE employee_db;
+
+CREATE TABLE departments (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(50) NOT NULL,
-  description TEXT
+  name VARCHAR(30)
 );
 
-CREATE TABLE candidates (
+CREATE TABLE roles (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(30) NOT NULL,
+  salary DECIMAL NOT NULL,
+  department_id INTEGER,
+  CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL
+);
+
+CREATE TABLE employees (
+  employee_id INTEGER AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
-  party_id INTEGER,
-  industry_connected BOOLEAN NOT NULL,
-  CONSTRAINT fk_party FOREIGN KEY (party_id) REFERENCES parties(id) ON DELETE SET NULL
-);
-
-CREATE TABLE voters (
-  id INTEGER AUTO_INCREMENT PRIMARY KEY,
-  first_name VARCHAR(30) NOT NULL,
-  last_name VARCHAR(30) NOT NULL,
-  email VARCHAR(50) NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE votes (
-  id INTEGER AUTO_INCREMENT PRIMARY KEY,
-  voter_id INTEGER NOT NULL,
-  candidate_id INTEGER NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT uc_voter UNIQUE (voter_id),
-  CONSTRAINT fk_voter FOREIGN KEY (voter_id) REFERENCES voters(id) ON DELETE CASCADE,
-  CONSTRAINT fk_candidate FOREIGN KEY (candidate_id) REFERENCES candidates(id) ON DELETE CASCADE
+  role_id INTEGER,
+  manager_id INTEGER,
+  CONSTRAINT uc_employee UNIQUE (employee_id)
 );
