@@ -1,35 +1,16 @@
-const express = require('express');
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const consoleTable = require('console.table');
 const db = require('./db/connection');
-const apiRoutes = require('./routes/api');
 
-const PORT = process.env.PORT || 3001;
-const app = express();
-
-// Express middleware
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
-app.use('/api', apiRoutes);
-
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-    res.status(404).end();
-});
-
-// Start server after DB connection
+// Start DB connection
 db.connect(err => {
     if (err) throw err;
     console.log('Database connected.');
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
 });
 
-inquirer
-    .prompt([
+const promptUser = () => {
+    return inquirer.prompt([
         {
             name: 'option',
             type: 'list',
@@ -40,18 +21,70 @@ inquirer
                     'View all Roles',
                     'View all Employees',
                     'Add a Department',
-                    'Add a role',
-                    'Add an employee',
-                    'Update an Employee Role'
+                    'Add a Role',
+                    'Add an Employee',
+                    'Update an Employee Role',
+                    'Exit'
                 ]
         },
     ])
     .then(res => {
-        switch(res) {
-            case 'View all Departments' :
-                console.log('View all Departments');
-            break;
+        switch(res.option) {
+            case 'View all Departments':
+                viewAllDepartments();
+            case 'View all Roles':
+                viewAllRoles();
+            case 'View all Employees':
+                viewAllEmployees();
+            case 'Add a Department':
+                // inquirer.prompt([
+                //     {
+                //         name: 'department',
+                //         type: 'input',
+                //         message: 'Please enter the department you wish to add.',
+                //         validate: departmentInput => {
+                //             if (departmentInput) {
+                //                 return true;
+                //             } else {
+                //                 console.log('Please enter the department you wish to enter.');
+                //                 return false;
+                //             }
+                //         }
+                //     }
+                // ])
+                console.log('Add a Department');
+                return promptUser();
+            case 'Add a Role':
+                console.log('Add a Role');
+                return promptUser();
+            case 'Add an Employee':
+                console.log('Add an Employee');
+                return promptUser();
+            case 'Update an Employee Role':
+                console.log('Update an Employee Role');
+                return promptUser();
             case 'Exit' :
-                break;
+                return;
         }
     });
+};
+
+const viewAllDepartments = () => {
+    const sql = `SELECT departments.id AS id, departments.name AS department FROM departments`;
+    db.query(sql, (error, response) => {
+        if (error) throw error;
+        console.table(response);
+        promptUser();
+    })
+}
+
+const viewAllRoles = () => {
+    const sql = `SELECT roles.id AS id, roles.title AS title, roles.salary AS salary FROM roles`;
+    db.query(sql, (error, response) => {
+        if (error) throw error;
+        console.table(response);
+        promptUser();
+    })
+}
+
+promptUser();
