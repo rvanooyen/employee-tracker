@@ -10,7 +10,7 @@ db.connect(err => {
 });
 
 const promptUser = () => {
-    return inquirer.prompt([
+    inquirer.prompt([
         {
             name: 'option',
             type: 'list',
@@ -35,7 +35,7 @@ const promptUser = () => {
             case 'View all Roles':
                 viewAllRoles();
             case 'View all Employees':
-                viewAllEmployees();
+                // viewAllEmployees();
             case 'Add a Department':
                 // inquirer.prompt([
                 //     {
